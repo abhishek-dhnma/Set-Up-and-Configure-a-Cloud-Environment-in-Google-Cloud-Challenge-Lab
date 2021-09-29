@@ -1,5 +1,6 @@
 Set Up and Configure a Cloud Environment in Google Cloud: Challenge Lab
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TASK 1 Create development VPC manually
 
 gcloud compute networks create griffin-dev-vpc --subnet-mode custom
@@ -8,6 +9,7 @@ gcloud compute networks subnets create griffin-dev-wp --network=griffin-dev-vpc 
 
 gcloud compute networks subnets create griffin-dev-mgmt --network=griffin-dev-vpc --region us-east1 --range=192.168.32.0/20
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TASK 2 Create production VPC manually
 
 gsutil cp -r gs://cloud-training/gsp321/dm .
@@ -21,6 +23,7 @@ gcloud deployment-manager deployments create prod-network \
 
 cd ..
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TASK 3 Create bastion host
 
 gcloud compute instances create bastion --network-interface=network=griffin-dev-vpc,subnet=griffin-dev-mgmt  --network-interface=network=griffin-prod-vpc,subnet=griffin-prod-mgmt --tags=ssh --zone=us-east1-b
@@ -29,7 +32,9 @@ gcloud compute firewall-rules create fw-ssh-dev --source-ranges=0.0.0.0/0 --targ
 
 gcloud compute firewall-rules create fw-ssh-prod --source-ranges=0.0.0.0/0 --target-tags ssh --allow=tcp:22 --network=griffin-prod-vpc
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TASK 4 Create and configure Cloud SQL Instance
+
 gcloud sql instances create griffin-dev-db --root-password password --region=us-east1
 
 gcloud sql connect griffin-dev-db
@@ -40,7 +45,9 @@ FLUSH PRIVILEGES;
 
 exit
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TASK 5 Create Kubernetes cluster
+
 gcloud container clusters create griffin-dev \
   --network griffin-dev-vpc \
   --subnetwork griffin-dev-wp \
@@ -55,6 +62,7 @@ cd ~/
 
 gsutil cp -r gs://cloud-training/gsp321/wp-k8s .
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TASK 6 Prepare the Kubernetes cluster
 
 Open Editor -> wp-k8s -> wp-env.yaml Change username and password to:
@@ -71,7 +79,9 @@ gcloud iam service-accounts keys create key.json \
 kubectl create secret generic cloudsql-instance-credentials \
     --from-file key.json
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TASK 7 Create a WordPress deployment
+
 In editor: wp-deployment.yaml -> replace YOUR_SQL_INSTANCE with griffin-dev-db.
 
 Save.
@@ -79,7 +89,9 @@ Save.
 kubectl create -f wp-deployment.yaml
 kubectl create -f wp-service.yaml
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TASK 8
+
 Navigation Menu -> Kubernetes Engine -> Services and Ingress -> Copy Endpoint's address.
 
 Navigation Menu -> Monitoring -> Uptime Checks -> + CREATE UPTIME CHECK
@@ -92,11 +104,14 @@ Next -> Target
 YML
 Next -> Next -> Create
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Task 9 Provide access for an additional engineer
+
 Navigation Menu -> IAM & Admin -> IAM -> ADD
 New Member : {Username 2 from Lab instruction page}
 Role : Project -> Editor
 YML
 Save.
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 COMPLETE :)
